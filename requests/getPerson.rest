@@ -1,0 +1,5 @@
+GET http://localhost:3001/api/persons/1
+Accept: application/json
+
+###
+DELETE http://localhost:3001/api/persons/1
