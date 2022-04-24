@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express');
 const morgan = require('morgan');
 const Person = require('./models/person')
+const {response} = require("express");
 
 let persons = [
     {
@@ -70,6 +71,17 @@ app.post('/api/persons', (req, res)=>{
     person.save()
         .then(p=>res.json(p))
 
+})
+app.put('/api/persons/:id', (requset, response,next)=>{
+    const body = requset.body
+    const person = {
+        id: requset.params.id,
+        name: body.name,
+        number: body.number
+    }
+    Person.findOneAndUpdate({id: requset.params.id},person,{new: true})
+        .then(newP=>response.json(newP))
+        .catch(e=>next(e))
 })
 app.delete('/api/persons/:id', (req, res,next)=>{
     Person.findOneAndDelete({id: req.params.id})
