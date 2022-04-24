@@ -42,12 +42,9 @@ app.get('/api/persons', (req, res)=>{
         .catch((err)=>res.status(404).end())
 });
 app.get('/api/persons/:id', (req, res)=>{
-    const id = Number(req.params.id);
-    const person = persons.find(p=>p.id ===id);
-    if(person)
-        res.json(person);
-    else
-        res.status(404).end();
+    const person = Person.find({id:req.params.id})
+        .then(person=>res.json(person))
+
 });
 app.get('/info', (req, res)=>{
     res.send(`Phonebook has info for ${persons.length} people <br> ${new Date()}` );
@@ -65,13 +62,13 @@ app.post('/api/persons', (req, res)=>{
         })
 
     let randomId =  Math.floor(Math.random() * 100);
-    const person = {
+    const person = new Person({
         "id": randomId,
         "name": body.name,
         "number": body.number
-    }
-    persons = persons.concat(person);
-    res.json(person);
+    })
+    person.save()
+        .then(p=>res.json(p))
 
 })
 app.delete('/api/persons/:id', (req, res)=>{
