@@ -1,5 +1,8 @@
+require('dotenv').config()
 const express = require('express');
 const morgan = require('morgan');
+const Person = require('./models/person')
+
 let persons = [
     {
         "id": 1,
@@ -32,7 +35,11 @@ morgan.token('json', (req, res)=>{
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :json'));
 
 app.get('/api/persons', (req, res)=>{
-    res.json(persons);
+    Person.find({})
+        .then((persons)=>{
+            res.json(persons)
+        })
+        .catch((err)=>res.status(404).end())
 });
 app.get('/api/persons/:id', (req, res)=>{
     const id = Number(req.params.id);

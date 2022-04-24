@@ -36,7 +36,7 @@ if(query){
     })
 } else {
     const person = new Person({
-        id: Math.floor(Math.random(100)),
+        id: Math.floor(Math.random()),
         name: String(name),
         number: String(number),
     })
