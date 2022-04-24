@@ -1,5 +1,5 @@
 node_modules
 *.xml
+.env
 package-lock.json
 .idea
-.env
