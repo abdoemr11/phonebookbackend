@@ -6,13 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "query": "node mongo.js",
+    "add": "node mongo.js"
+
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.3",
+    "mongoose": "^6.3.1",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
