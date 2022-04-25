@@ -8,7 +8,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "query": "node mongo.js",
-    "add": "node mongo.js"
+    "add": "node mongo.js",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "eslint": "^8.14.0",
     "nodemon": "^2.0.15"
   }
 }
