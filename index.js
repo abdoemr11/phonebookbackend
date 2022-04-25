@@ -42,34 +42,49 @@ app.get('/api/persons', (req, res)=>{
         })
         .catch((err)=>res.status(404).end())
 });
-app.get('/api/persons/:id', (req, res)=>{
-    const person = Person.find({id:req.params.id})
-        .then(person=>res.json(person))
-
+app.get('/api/persons/:id', (req, res,next)=>{
+    Person.find({id:req.params.id})
+        .then(person=>{
+            console.log(person)
+            if(person.length>0)
+                res.json(person)
+            else
+                res.status(404).end()
+        })
+        .catch(e=>next(e))
 });
 app.get('/info', (req, res)=>{
-    res.send(`Phonebook has info for ${persons.length} people <br> ${new Date()}` );
+    Person.find({})
+        .then(persons=>{
+            res.send(`Phonebook has info for ${persons.length} people <br> ${new Date()}` );
+        })
 });
-app.post('/api/persons', (req, res)=>{
+app.post('/api/persons', (req, res,next)=>{
 
     const body = req.body;
-    if(!(body.name && body.number))
-        res.status(400).json({
-            "error": "You havn't provide a name or a number "
-        })
-    if(persons.some(p=>p.name ===body.name))
-        res.status(400).json({
-            "error": `${body.name} is already exist`
-        })
-
     let randomId =  Math.floor(Math.random() * 100);
-    const person = new Person({
-        "id": randomId,
-        "name": body.name,
-        "number": body.number
-    })
-    person.save()
-        .then(p=>res.json(p))
+    Person.find({name: body.name})
+        .then(p=>{
+            console.log(p)
+            if(p.length > 0)
+            {
+                res.status(400).json({"error": "this name is already exist"})
+                return
+            }
+            const person = new Person({
+                "id": randomId,
+                "name": body.name,
+                "number": body.number
+            })
+            person.save()
+                .then(p=>{
+                    res.json(p)
+                    console.log("saved the new person")
+                })
+                .catch(e=>next(e))
+        })
+        .catch(e=> next(e))
+
 
 })
 app.put('/api/persons/:id', (requset, response,next)=>{
@@ -79,7 +94,8 @@ app.put('/api/persons/:id', (requset, response,next)=>{
         name: body.name,
         number: body.number
     }
-    Person.findOneAndUpdate({id: requset.params.id},person,{new: true})
+    Person.findOneAndUpdate({id: requset.params.id},person,
+        {new: true, runValidators: true, context: 'query'})
         .then(newP=>response.json(newP))
         .catch(e=>next(e))
 })
@@ -92,10 +108,12 @@ app.delete('/api/persons/:id', (req, res,next)=>{
 
 })
 const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
+    console.error(error.name ," ",error.message)
 
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
+    } else if(error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
     }
 
     next(error)
